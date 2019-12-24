@@ -1,0 +1,11 @@
+{
+  "name": "feedtemplate",
+  "version": "1.0.0",
+  "description": "infinite scroll template",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dante",
+  "license": "ISC"
+}
