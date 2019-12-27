@@ -3,53 +3,108 @@ import axios from "axios";
 import debounce from "lodash.debounce";
 import "./feed.css";
 
+async function getMax(){
+  const maxNum = await axios.get("https://pokeapi.co/api/v2/pokemon");
+  return maxNum.data.count;
+}
+
 const Feed = () => {
   const [postList, setPostList] = useState([]);
   const [pokenum, setPokenum] = useState(1);
-  const [error, setError] = useState(false);
+  // const [error, setError] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-
-  async function fetch10(pnum, plist) {
-    setIsLoading(true);
-    const maxNum = await axios.get("https://pokeapi.co/api/v2/pokemon");
-    if(pnum > maxNum.data.count){
-      setHasMore(false);
-      return;
-    }
-    try {
-      let f10 = plist;
-      let i = pokenum;
-      let currpkm;
-      for(i; i <= 10; i++){
-        currpkm = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`);
-        f10.push(currpkm.data);
-      }
-      setPokenum(i);
-      setPostList(f10);
-    } catch (e) {
-      console.log(e, "error");
-      setError(true);
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
   let handleScroll = debounce(() => {
     if(window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight){
       return;
     }
-    if(isLoading || error || !hasMore){
+    if(isLoading || !hasMore){
       return;
     }
-    fetch10();
-  }, 100, [isLoading, error, hasMore, fetch10]);
+    
+    console.log("handleScroll KICING IN!!!!!!!!!");
+    setIsLoading(true);
+    const maxNum = getMax();
+    if(pokenum > maxNum){
+      setHasMore(false);
+      return;
+    }
+
+    async function fetch10(pnum, plist) {
+      const maxNum = getMax();
+      let f10 = plist;
+      let i = pnum;
+      let currpkm;
+      // console.log("i in handleScroll starts with: ", i);
+      // console.log("f10 in handleScroll starts with: ", f10);
+      let lim = i + 10;
+      for(i; i < lim; i++){
+        if(i > maxNum){
+          break;
+        }
+        try {
+          currpkm = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`);
+        } catch (e) {
+          console.log("fetch10 error: ", e);
+          break;
+        }
+        f10.push(currpkm.data);
+      }
+      // console.log("f10 is: ", f10);
+      setPokenum(i);
+      setPostList(f10);
+    }
+    fetch10(pokenum, postList);
+    
+    // setError(true);
+    
+    setIsLoading(false);
+
+  }, 100, [isLoading, hasMore, pokenum, postList]);
 
   useEffect(() => {
-    fetch10(pokenum, postList)
+    setIsLoading(true);
+    const maxNum = getMax();
+    if(pokenum > maxNum){
+      setHasMore(false);
+      return;
+    }
+    // console.log("postList WAS: ", postList);
+
+    async function fetch10(pnum, plist) {
+      const maxNum = getMax();
+      let f10 = plist;
+      let i = pnum;
+      let currpkm;
+      for(i; i <= 10; i++){
+        if(i > maxNum){
+          break;
+        }
+        try {
+          currpkm = await axios.get(`https://pokeapi.co/api/v2/pokemon/${i}`);
+        } catch (e) {
+          console.log("fetch10 error: ", e);
+          break;
+        }
+        f10.push(currpkm.data);
+      }
+      // console.log("f10 is: ", f10);
+      setPokenum(i);
+      setPostList(f10);
+    }
+    fetch10(pokenum, postList);
+    // console.log("postList is NOW: ", postList);
+    
+    // setError(true);
+    
+    setIsLoading(false);
+  }, [pokenum, postList]);
+
+  useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [pokenum, postList, handleScroll, fetch10]);
+  }, [handleScroll]);
 
   return (
     <div>
@@ -64,15 +119,22 @@ const Feed = () => {
           ))}
         </ol> */}
         <h4>Using POKEAPI /pokemon/:id starting from 1 </h4>
-        {postList.map((item, index) => (
-          <div className="Feed" key={index}>
+        {postList.map((item, index) => {
+          return (<div className="Feed" key={index}>
             <img src={item.sprites.front_default} alt={"image of "+item.name} />
             <p>ID: {item.id}</p>
             <p>Name: <b>{item.name}</b></p>
             <p>Height: {item.height}</p>
             <p>Weight: {item.weight}</p>
-          </div>
-        ))}
+          </div>)
+        })}
+        {
+          () => {
+            if(isLoading){
+              return (<div>Loading ...</div>)
+            }
+          }
+        }
       </div>
     </div>
   );
