@@ -132,6 +132,8 @@ const Feed = () => {
           () => {
             if(isLoading){
               return (<div>Loading ...</div>)
+            } else {
+              return (<div>THIS IS NOT WORKING AS INTENDED</div>)
             }
           }
         }
