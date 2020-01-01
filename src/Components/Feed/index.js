@@ -64,6 +64,7 @@ const Feed = () => {
   }, 100, [isLoading, hasMore, pokenum, postList]);
 
   useEffect(() => {
+    console.log("1st useEffect taking place!!!");
     setIsLoading(true);
     const maxNum = getMax();
     if(pokenum > maxNum){
@@ -102,6 +103,7 @@ const Feed = () => {
   }, [pokenum, postList]);
 
   useEffect(() => {
+    console.log("2nd useEffect taking place!!!");
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
@@ -120,6 +122,7 @@ const Feed = () => {
         </ol> */}
         <h4>Using POKEAPI /pokemon/:id starting from 1 </h4>
         {postList.map((item, index) => {
+          console.log(index);
           return (<div className="Feed" key={index}>
             <img src={item.sprites.front_default} alt={"image of "+item.name} />
             <p>ID: {item.id}</p>
@@ -128,15 +131,11 @@ const Feed = () => {
             <p>Weight: {item.weight}</p>
           </div>)
         })}
-        {
-          () => {
-            if(isLoading){
-              return (<div>Loading ...</div>)
-            } else {
-              return (<div>THIS IS NOT WORKING AS INTENDED</div>)
-            }
-          }
-        }
+        <br/>
+        <b>
+          {isLoading ? 'LOADING ...' : ''}
+        </b>
+        <br/>
       </div>
     </div>
   );

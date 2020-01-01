@@ -1,8 +1,8 @@
 # feedTemplate
 inf scroll
 
-## This is a template
-Using data from pokeapi `https://pokeapi.co/api/v2/pokemon`
+## Work in progress*
+rendering twice somewhere
 
 ### Getting Started
 To install all dependencies
