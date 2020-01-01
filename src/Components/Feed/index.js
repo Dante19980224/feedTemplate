@@ -108,6 +108,7 @@ const Feed = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
+  console.log("in the HOOOK");
   return (
     <div>
       <h2>Feed</h2>
